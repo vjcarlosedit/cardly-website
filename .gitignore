@@ -97,7 +97,7 @@ dist/
 
 # Gatsby files
 .cache/
-public
+# public - NO ignorar, necesitamos public/favicon.png para Vite
 
 # Vue.js
 .DS_Store
