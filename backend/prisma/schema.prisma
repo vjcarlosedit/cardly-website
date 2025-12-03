@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  password        String
+  photo           String?
+  plan            String    @default("Gratis") // Gratis, Trimestral, Semestral, Anual
+  generationsLeft Int       @default(15)
+  collectionsLeft Int       @default(10)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  collections     Collection[]
+  
+  @@map("users")
+}
+
+model Collection {
+  id              String    @id @default(cuid())
+  userId          String
+  name            String
+  progress        Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards           Card[]
+  
+  @@map("collections")
+}
+
+model Card {
+  id              String    @id @default(cuid())
+  collectionId    String
+  front           String
+  back            String
+  nextReviewDate  DateTime? // Fecha de próxima revisión
+  interval        Int       @default(0) // Intervalo en minutos
+  easeFactor      Float     @default(2.5) // Factor de facilidad (como Anki)
+  repetitions     Int       @default(0) // Número de repeticiones exitosas
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  collection     Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  
+  @@map("cards")
+}
+

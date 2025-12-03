@@ -1,0 +1,68 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cardly-postgres
+    environment:
+      POSTGRES_USER: cardly_user
+      POSTGRES_PASSWORD: cardly_password
+      POSTGRES_DB: cardly_db
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardly_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cardly-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/uploads:/app/uploads
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://cardly_user:cardly_password@postgres:5432/cardly_db?schema=public
+      - JWT_SECRET=cardly-secret-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - PORT=5000
+      - DEEPSEEK_API_URL=https://api.deepseek.com/v1/chat/completions
+      - MAX_FILE_SIZE=10485760
+      - UPLOAD_DIR=./uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  # Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cardly-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5000/api
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+
