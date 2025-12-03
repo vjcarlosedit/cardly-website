@@ -22,6 +22,24 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route
+app.get('/', (req: express.Request, res: express.Response) => {
+  res.json({
+    message: 'Cardly API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      collections: '/api/collections',
+      cards: '/api/cards',
+      ocr: '/api/ocr',
+      ai: '/api/ai',
+    },
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -31,7 +49,7 @@ app.use('/api/ocr', ocrRoutes);
 app.use('/api/ai', aiRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', message: 'Cardly API is running' });
 });
 
