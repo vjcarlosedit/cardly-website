@@ -58,12 +58,13 @@ router.post('/register', async (req, res) => {
     });
 
     // Generate token
-    const jwtSecret = process.env.JWT_SECRET || 'secret';
-    const jwtExpiresIn = (process.env.JWT_EXPIRES_IN || '7d') as string;
+    const jwtSecret: string = process.env.JWT_SECRET || 'secret';
+    const jwtExpiresIn: string = process.env.JWT_EXPIRES_IN || '7d';
+    const signOptions: SignOptions = { expiresIn: jwtExpiresIn };
     const token = jwt.sign(
       { userId: user.id },
       jwtSecret,
-      { expiresIn: jwtExpiresIn } as SignOptions
+      signOptions
     );
 
     res.status(201).json({
@@ -100,12 +101,13 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate token
-    const jwtSecret = process.env.JWT_SECRET || 'secret';
-    const jwtExpiresIn = (process.env.JWT_EXPIRES_IN || '7d') as string;
+    const jwtSecret: string = process.env.JWT_SECRET || 'secret';
+    const jwtExpiresIn: string = process.env.JWT_EXPIRES_IN || '7d';
+    const signOptions: SignOptions = { expiresIn: jwtExpiresIn };
     const token = jwt.sign(
       { userId: user.id },
       jwtSecret,
-      { expiresIn: jwtExpiresIn } as SignOptions
+      signOptions
     );
 
     res.json({
