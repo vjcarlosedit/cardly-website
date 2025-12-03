@@ -52,6 +52,7 @@
     build: {
       target: 'esnext',
       outDir: 'dist',
+      copyPublicDir: true, // Asegurar que se copien los archivos de public/
     },
     server: {
       port: 3000,
