@@ -1,4 +1,11 @@
+// API_URL debe incluir /api al final
+// Ejemplo: https://cardly-backend.onrender.com/api
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Log para debug en desarrollo
+if (import.meta.env.DEV) {
+  console.log('API_URL configurada:', API_URL);
+}
 
 class ApiService {
   private getToken(): string | null {
@@ -20,12 +27,27 @@ class ApiService {
     }
 
     const url = `${API_URL}${endpoint}`;
-    console.log('API Request:', url, { method: options.method || 'GET' });
+    
+    // Log detallado para debug
+    if (import.meta.env.DEV) {
+      console.log('API Request:', {
+        url,
+        method: options.method || 'GET',
+        endpoint,
+        API_URL,
+      });
+    }
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers,
+      });
+    } catch (networkError: any) {
+      // Error de red (CORS, conexión, etc.)
+      throw new Error(`Error de conexión: ${networkError.message || 'No se pudo conectar al servidor'}`);
+    }
 
     if (!response.ok) {
       let errorMessage = 'Unknown error';
