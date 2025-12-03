@@ -28,15 +28,13 @@ class ApiService {
 
     const url = `${API_URL}${endpoint}`;
     
-    // Log detallado para debug
-    if (import.meta.env.DEV) {
-      console.log('API Request:', {
-        url,
-        method: options.method || 'GET',
-        endpoint,
-        API_URL,
-      });
-    }
+    // Log detallado para debug (siempre en producción también para troubleshooting)
+    console.log('API Request:', {
+      url,
+      method: options.method || 'GET',
+      endpoint,
+      API_URL,
+    });
 
     let response: Response;
     try {
@@ -64,7 +62,13 @@ class ApiService {
           errorMessage = `Error ${response.status}: ${response.statusText || 'Unknown error'}`;
         }
       }
-      throw new Error(errorMessage);
+      
+      // Agregar información de la URL para debug
+      const fullErrorMessage = response.status === 404 
+        ? `Error 404: Ruta no encontrada. URL: ${url}. Verifica que VITE_API_URL esté configurada correctamente.`
+        : `Error ${response.status}: ${errorMessage}`;
+      
+      throw new Error(fullErrorMessage);
     }
 
     return response.json();
