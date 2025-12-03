@@ -19,14 +19,30 @@ class ApiService {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    const url = `${API_URL}${endpoint}`;
+    console.log('API Request:', url, { method: options.method || 'GET' });
+
+    const response = await fetch(url, {
       ...options,
       headers,
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
+      let errorMessage = 'Unknown error';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || error.message || `HTTP error! status: ${response.status}`;
+      } catch (e) {
+        // Si la respuesta no es JSON, intentar obtener el texto
+        try {
+          const text = await response.text();
+          errorMessage = text || `HTTP error! status: ${response.status}`;
+        } catch (textError) {
+          // Si todo falla, usar el mensaje genérico con el status
+          errorMessage = `Error ${response.status}: ${response.statusText || 'Unknown error'}`;
+        }
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
