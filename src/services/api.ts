@@ -1,11 +1,15 @@
-// API_URL debe incluir /api al final
-// Ejemplo: https://cardly-backend.onrender.com/api
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// API_URL puede incluir o no /api al final, lo agregamos automáticamente si falta
+let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-// Log para debug en desarrollo
-if (import.meta.env.DEV) {
-  console.log('API_URL configurada:', API_URL);
+// Asegurar que termine en /api
+if (!API_URL.endsWith('/api')) {
+  // Si termina con /, quitar el / y agregar /api
+  // Si no termina con /, agregar /api
+  API_URL = API_URL.replace(/\/$/, '') + '/api';
 }
+
+// Log para debug
+console.log('API_URL configurada:', API_URL);
 
 class ApiService {
   private getToken(): string | null {
