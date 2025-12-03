@@ -72,7 +72,7 @@ router.post('/extract', authenticate, upload.single('file'), async (req: AuthReq
         // PSM 6: Uniform block of text (mejor para documentos con texto estructurado)
         // PSM 3: Fully automatic page segmentation (default, mejor para imágenes variadas)
         await worker.setParameters({
-          tessedit_pageseg_mode: 3, // Fully automatic page segmentation
+          tessedit_pageseg_mode: '3' as any, // Fully automatic page segmentation
           preserve_interword_spaces: '1', // Preservar espacios entre palabras
         });
         
