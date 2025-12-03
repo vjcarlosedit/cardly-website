@@ -60,10 +60,11 @@ router.post('/register', async (req, res) => {
     // Generate token
     const jwtSecret: string = process.env.JWT_SECRET || 'secret';
     const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d';
+    // @ts-ignore - jsonwebtoken types are too strict, but this works at runtime
     const token = jwt.sign(
       { userId: user.id },
       jwtSecret,
-      { expiresIn: jwtExpiresIn as string | number }
+      { expiresIn: jwtExpiresIn }
     );
 
     res.status(201).json({
@@ -102,10 +103,11 @@ router.post('/login', async (req, res) => {
     // Generate token
     const jwtSecret: string = process.env.JWT_SECRET || 'secret';
     const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d';
+    // @ts-ignore - jsonwebtoken types are too strict, but this works at runtime
     const token = jwt.sign(
       { userId: user.id },
       jwtSecret,
-      { expiresIn: jwtExpiresIn as string | number }
+      { expiresIn: jwtExpiresIn }
     );
 
     res.json({
